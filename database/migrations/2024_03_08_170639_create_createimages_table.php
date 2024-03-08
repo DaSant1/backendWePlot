@@ -15,6 +15,12 @@ class CreateCreateimagesTable extends Migration
     {
         Schema::create('createimages', function (Blueprint $table) {
             $table->id();
+            $table->string('Title');
+            $table->string('path');
+            $table->boolean('Activo')->default(true);
+            //id User
+            $table->UnsignedBigInteger('idUser');
+            $table->foreign('idUser')->references('id')->on('users');
             $table->timestamps();
         });
     }
