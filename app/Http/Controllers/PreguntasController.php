@@ -34,4 +34,18 @@ class PreguntasController extends Controller
         $datos=preguntas::all();
         return response()->json($datos, 200);
     }
+    
+    public function getPreguntasDisponibles(){
+        try{
+            $datos=preguntas::select('id','pregunta')
+                        ->where('Activo',true)
+                        ->get();
+            return response()->json($datos, 200);
+        }catch(Exception $e){
+            return response()->json([
+                'message'=>'error al subir los datos'
+            ], 500);
+        }
+        
+    }
 }

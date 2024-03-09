@@ -14,6 +14,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('user')->group(function(){
+    Route::post('registrer',[App\Http\Controllers\UserController::class,'registrer']);
+    Route::post('autenticar',[App\Http\Controllers\UserController::class,'authenticate']);
+});
+
+
+//endPoint que obtene información relacionada a la tabla Estados
+Route::prefix('estado')->group(function(){
+    Route::post('create',[App\Http\Controllers\EstadoController::class,'createNewEstado']);
+    Route::get('get',[App\Http\Controllers\EstadoController::class,'getEstados']);
+});
+
+Route::prefix('pregunta')->group(function(){
+    Route::get('getPreguntasDisponibles',[App\Http\Controllers\PreguntasController::class,'getPreguntasDisponibles']);
+    Route::post('create',[App\Http\Controllers\PreguntasController::class,'createNewPregunta']);
+    Route::get('get',[App\Http\Controllers\PreguntasController::class,'getHistorialPreguntas']);
 });

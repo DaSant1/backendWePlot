@@ -24,7 +24,7 @@ class UserController extends Controller
                 'error'=>'No se pudo crear el Token, intentelo más tarde'
             ], 500);
         }
-        return response()->json(compact['token'], 200);
+        return response()->json(compact('token'), 200);
     }
 
     public function getAthenticateUser(){
@@ -43,7 +43,7 @@ class UserController extends Controller
         }catch(Tymon\JWTAuth\Exceptions\JWTException $e){
             return response()->json(['Token_Ausente'],$e->getStatusCode());
         }
-        return response()->json(compact['user'], 200);
+        return response()->json(compact('user'), 200);
     }
 
     public function registrer(Request $request){
@@ -58,15 +58,46 @@ class UserController extends Controller
             return response()->json($validate->errors()->toJson(), 400);
         }
 
-        $user=User::create([
-            'name'=>$request->get('name'),
-            'email'=>$request->get('email'),
-            'first_name'=>$request->get('first_name'),
-            'last_name'=>$request->get('last_name'),
-            'password'=>Hash::make($request->get('password')),
-        ]);
+        if($this->_validate_email($request->email)!=false){
+            return response()->json([
+                'message'=>'El Usuario ya existe'
+            ], 409);
+        }else{
+            $this->_RegistrerUser($request);
+        }
 
-        $token=JWTAuth::fromUser($user);
-        return response()->json(compact('user','token'), 200);
+       
+    }
+    private function _RegistrerUser(Request $request){
+        try{
+            $user=User::create([
+                'name'=>$request->get('name'),
+                'email'=>$request->get('email'),
+                'first_name'=>$request->get('first_name'),
+                'last_name'=>$request->get('last_name'),
+                'password'=>Hash::make($request->get('password')),
+            ]);
+    
+            $token=JWTAuth::fromUser($user);
+            return response()->json(compact('user','token'), 200);
+        }catch(Exception $e){
+            return response()->json([
+                'message'=>'ha ocurrido un error en subir datos'
+            ], 422);
+        }
+        
+    }
+    private function _validate_email($email){
+        try{
+            $user=user::where('email',$email)->first();
+            return response()->json($user, 200);
+            if($user){
+                return true;
+            }else{
+                return false;
+            }
+        }catch(Exception $e){
+            return true;
+        }
     }
 }
