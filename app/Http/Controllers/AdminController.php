@@ -7,7 +7,10 @@ use App\Models\admin;
 class AdminController extends Controller
 {
     public function getAdmins(){
-        $data=admin::all();
+        $data=admin::join("users as u",'u.id','=','admins.idUser')
+                    ->select('u.id as idUser','u.Name','admins.id as idAdmin','admins.Activo')
+                    ->get();
+        return response()->json($data, 200);
     }
 
     public function registrerNewAdmin(Request $request){
@@ -33,6 +36,28 @@ class AdminController extends Controller
         }
     }
 
+
+    public function getIdAdminByIdUser(Request $request){
+        $data=$request->validate([
+            'idUser'=>'required'
+        ]);
+        try{
+            $datos=admin::find($request->idUser,'idUser');
+            if($datos){
+                return response()->json([
+                    $datos
+                ], 200);
+            }else{
+                return response()->json([
+                    ['idUser'=>'0']
+                ], 200);
+            }
+        }catch(Exception $e){
+            return response()->json([
+                'message'=>'error'
+            ], 500);
+        }
+    }
     public function getAdminByIdUser(Request $request){
         $data=$request->validate([
             'idUser'=>'required'

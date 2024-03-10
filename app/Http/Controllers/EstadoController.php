@@ -33,4 +33,8 @@ class EstadoController extends Controller
         $estados=estado::all();
         return response()->json($data, 200);
     }
+
+    public function updateEmail(Request $request){
+        
+    }
 }

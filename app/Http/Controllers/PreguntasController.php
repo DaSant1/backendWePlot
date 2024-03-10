@@ -37,7 +37,7 @@ class PreguntasController extends Controller
     
     public function getPreguntasDisponibles(){
         try{
-            $datos=preguntas::select('id','pregunta')
+            $datos=preguntas::select('id','pregunta','Activo')
                         ->where('Activo',true)
                         ->get();
             return response()->json($datos, 200);
@@ -47,5 +47,43 @@ class PreguntasController extends Controller
             ], 500);
         }
         
+    }
+
+    public function ActivarPregunta(Request $request){
+        $data=$request->validate([
+            'id'=>'required'
+        ]);
+        try{
+            $Pregunta=preguntas::findOrFail($request->id);
+            $Pregunta->Activo=1;
+            $Pregunta->Save();
+            return response()->json([
+                'message'=>'Success'
+            ], 200);
+        }catch(\Illuminate\Database\Eloquent\ModelNotFoundException $e){
+            return response()->json([
+                'message'=>'error pregunta no encontrada'
+            ], 200);
+        }
+        
+    
+    }
+
+    public function DesactivarPregunta(Request $request){
+        $data=$request->validate([
+            'id'=>'required'
+        ]);
+        try{
+            $Pregunta=preguntas::findOrFail($request->id);
+            $Pregunta->Activo=0;
+            $Pregunta->Save();
+            return response()->json([
+                'message'=>'Success'
+            ], 200);
+        }catch(\Illuminate\Database\Eloquent\ModelNotFoundException $e){
+            return response()->json([
+                'message'=>'error pregunta no encontrada'
+            ], 200);
+        }
     }
 }

@@ -7,10 +7,15 @@ use App\Models\user;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
+//use Mail;
+
+
+use Illuminate\Support\Facades\Mail;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UserController extends Controller
 {
+    
     public function authenticate(Request $request){
         $credentials=$request->only('email','password');
         try{
@@ -89,6 +94,7 @@ class UserController extends Controller
             ]);
     
             $token=JWTAuth::fromUser($user);
+           // $this->emailSender($request);
             return response()->json(compact('user','token'), 200);
         }catch(Exception $e){
             return response()->json([
@@ -109,4 +115,23 @@ class UserController extends Controller
         
     }
 
+    private function emailSender(Request $request) {
+        $data = $request->validate([
+            'email' => 'email|required'
+        ]);
+    
+        $subject = "Tu cuenta de WePlot ha sido creada Exitosamente";
+        $for = $data['email'];
+    
+        Mail::send('email', ['subject' => $subject], function ($msj) use ($subject, $for) {
+            $msj->from('weplotsystem@gmail.com', "Systema Integrado de WePlot");
+            $msj->subject($subject);
+            $msj->to($for);
+        });
+    }
+
+    public   function getUsers(){
+        $data=User::all();
+        return response()->json($data, 200);
+    }
 }

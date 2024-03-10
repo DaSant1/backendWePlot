@@ -50,4 +50,24 @@ class RespuestasClientesController extends Controller
         }
         
     }
+
+    public function getRespuestasByIdUser(Request $request){
+        $data=$request->validate([
+            'idUser'=>'required'
+        ]);
+        try{
+            $datos=respuestas_clientes::where('idUser',$request->idUser)
+                                    ->join('users as u','u.id','=','respuestas_clientes.idUser')
+                                    ->join('preguntas as p','p.id','=','respuestas_clientes.idPregunta')
+                                    ->select('respuestas_clientes.Respuesta','p.pregunta')
+                                    ->get();
+            return response()->json($datos, 200);
+        }catch(Exception $e){
+            return response()->json([
+                'error'=>'error en obtener los datos'
+            ], 500);
+        }
+        
+
+    }
 }
