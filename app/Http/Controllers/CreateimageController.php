@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\createimage;
+use Illuminate\Support\Facades\Validator;
 class CreateimageController extends Controller
 {
     public function store(Request $request){
@@ -23,6 +24,7 @@ class CreateimageController extends Controller
             $image= new createimage();
             $image->Title=$name;
             $image->path= $path;
+            $image->idUser=1;
             $image->save();
         }
         return response()->json([

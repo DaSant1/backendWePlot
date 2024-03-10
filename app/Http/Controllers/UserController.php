@@ -58,7 +58,7 @@ class UserController extends Controller
             return response()->json($validate->errors()->toJson(), 400);
         }
 
-        if($this->_validate_email($request->email)!=false){
+        if($this->_validate_email($request->email)===true){
             return response()->json([
                 'message'=>'El Usuario ya existe'
             ], 409);
@@ -69,6 +69,16 @@ class UserController extends Controller
        
     }
     private function _RegistrerUser(Request $request){
+        $validate=Validator::make($request->all(),[
+            'name'=> 'required|string',
+            'email'=> 'required|string',
+            'password'=> 'required|string',
+            'first_name'=>'required|string',
+            'last_name'=>'required|string'
+        ]);
+        if($validate->fails()){
+            return response()->json($validate->errors()->toJson(), 400);
+        }
         try{
             $user=User::create([
                 'name'=>$request->get('name'),
@@ -88,16 +98,15 @@ class UserController extends Controller
         
     }
     private function _validate_email($email){
-        try{
+
             $user=user::where('email',$email)->first();
-            return response()->json($user, 200);
+            
             if($user){
                 return true;
             }else{
                 return false;
             }
-        }catch(Exception $e){
-            return true;
-        }
+        
     }
+
 }
